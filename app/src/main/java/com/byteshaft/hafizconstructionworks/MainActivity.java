@@ -8,30 +8,33 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.byteshaft.hafizconstructionworks.gettersetters.Quarters;
 import com.byteshaft.requests.HttpRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
-import java.util.List;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     private ListView mListView;
     private QuarterAdapter adapter;
-
+    private ArrayList<Quarters> quartersList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +44,22 @@ public class MainActivity extends AppCompatActivity {
         mListView = findViewById(R.id.quarter_list);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
+        quartersList = new ArrayList<>();
+        getAllQuarters();
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 addQuarterDialog();
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
+            }
+        });
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Quarters singleQuarter = quartersList.get(position);
+                Intent intent = new Intent(MainActivity.this, QuarterDetail.class);
+                intent.putExtra("q_id", singleQuarter.getId());
+                intent.putExtra("q_name", singleQuarter.getName());
+                startActivity(intent);
             }
         });
     }
@@ -81,7 +94,10 @@ public class MainActivity extends AppCompatActivity {
                 switch (readyState) {
                     case HttpRequest.STATE_DONE:
                         switch (request.getStatus()) {
-                            case HttpURLConnection.HTTP_OK:
+                            case HttpURLConnection.HTTP_CREATED:
+                                quartersList.clear();
+                                getAllQuarters();
+
                         }
                 }
             }
@@ -92,10 +108,10 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        request.open("POST", String.format("%saddkjlkn/", "Url"));
+        request.open("POST", "http://192.168.100.3:5000/create_quarter");
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("name", quarterName);
+            jsonObject.put("owner", quarterName);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -104,10 +120,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getAllQuarters() {
-        HttpRequest request = new HttpRequest(getApplicationContext());
+        final HttpRequest request = new HttpRequest(getApplicationContext());
         request.setOnReadyStateChangeListener(new HttpRequest.OnReadyStateChangeListener() {
             @Override
-            public void onReadyStateChange(HttpRequest httpRequest, int i) {
+            public void onReadyStateChange(HttpRequest httpRequest, int readyState) {
+                switch (readyState) {
+                    case HttpRequest.STATE_DONE:
+                        switch (httpRequest.getStatus()) {
+                            case HttpURLConnection.HTTP_OK:
+                                Log.wtf("quarters ", request.getResponseText());
+                                try {
+                                    JSONArray jsonArray = new JSONArray(request.getResponseText());
+                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                        Quarters quarters = new Quarters();
+                                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                                        quarters.setId(jsonObject.getInt("id"));
+                                        quarters.setName(jsonObject.getString("owner"));
+                                        Log.wtf("Names..:", jsonObject.getString("owner"));
+                                        quartersList.add(quarters);
+                                    }
+                                    adapter = new QuarterAdapter(getApplicationContext(), quartersList);
+                                    mListView.setAdapter(adapter);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                        }
+                }
 
             }
         });
@@ -117,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        request.open("GET", "");
+        request.open("GET", "http://192.168.100.3:5000/quarters");
         request.send();
     }
 
@@ -155,14 +193,16 @@ public class MainActivity extends AppCompatActivity {
 
         private ViewHolder viewHolder;
         private Context context;
+        private ArrayList<Quarters> quarters;
 
-        private QuarterAdapter(Context context) {
+        private QuarterAdapter(Context context, ArrayList<Quarters> quarters) {
             this.context = context;
+            this.quarters = quarters;
         }
 
         @Override
         public int getCount() {
-            return 0;
+            return quarters.size();
         }
 
         @Override
@@ -186,6 +226,9 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
+
+            Quarters singleQuarter = quarters.get(position);
+            viewHolder.quarterTitle.setText(singleQuarter.getName());
 
             return convertView;
         }
