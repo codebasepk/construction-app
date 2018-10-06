@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.byteshaft.hafizconstructionworks.gettersetters.Quarters;
 import com.byteshaft.requests.HttpRequest;
@@ -62,6 +63,50 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Quarters singleQuarter = quartersList.get(position);
+                deleteDialog(singleQuarter.getId());
+                return true;
+            }
+        });
+    }
+
+    private void deleteDialog(int quarterId) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        alertDialogBuilder.setTitle("Delete");
+        alertDialogBuilder.setMessage("Do you want to delete this item?")
+                .setCancelable(false).setPositiveButton(getString(R.string.yes),
+                (dialog, id) -> {
+                    dialog.dismiss();
+                    deleteQuarter(quarterId);
+                });
+        alertDialogBuilder.setNegativeButton(getString(R.string.no), (dialogInterface, i) -> dialogInterface.dismiss());
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    private void deleteQuarter(int quarterId) {
+        HttpRequest request = new HttpRequest(getApplicationContext());
+        request.setOnReadyStateChangeListener(new HttpRequest.OnReadyStateChangeListener() {
+            @Override
+            public void onReadyStateChange(HttpRequest request, int state) {
+                switch (state) {
+                    case HttpRequest.STATE_DONE:
+                        switch (request.getStatus()) {
+                            case HttpURLConnection.HTTP_OK:
+                                quartersList.clear();
+                                getAllQuarters();
+                                adapter.notifyDataSetChanged();
+                                Toast.makeText(MainActivity.this, "Item Removed", Toast.LENGTH_SHORT).show();
+                        }
+                }
+            }
+        });
+        request.open("DELETE", String.format("%sdelete/quarter/%s", AppGlobals.SERVER_IP, quarterId));
+        request.send();
     }
 
     @Override

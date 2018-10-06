@@ -36,12 +36,19 @@ public class QuarterDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_details);
         mQuarterId = getIntent().getIntExtra("q_id", -1);
         mQuarterName = getIntent().getStringExtra("q_name");
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         quartersDetailsArrayList = new ArrayList<>();
         setTitle(mQuarterName);
         mListview = findViewById(R.id.quarter_detail_list);
         getQuarterDetails(mQuarterId);
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 
     private void getQuarterDetails(int quarterId) {
         HttpRequest request = new HttpRequest(getApplicationContext());
