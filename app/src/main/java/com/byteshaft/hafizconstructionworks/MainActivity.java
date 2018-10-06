@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Quarters singleQuarter = quartersList.get(position);
-                Intent intent = new Intent(MainActivity.this, QuarterDetail.class);
+                Intent intent = new Intent(MainActivity.this, QuarterDetailActivity.class);
                 intent.putExtra("q_id", singleQuarter.getId());
                 intent.putExtra("q_name", singleQuarter.getName());
                 startActivity(intent);
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        request.open("POST", "http://192.168.100.3:5000/create_quarter");
+        request.open("POST", String.format("%screate_quarter", AppGlobals.SERVER_IP));
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("owner", quarterName);
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        request.open("GET", "http://192.168.100.3:5000/quarters");
+        request.open("GET", String.format("%squarters", AppGlobals.SERVER_IP));
         request.send();
     }
 
