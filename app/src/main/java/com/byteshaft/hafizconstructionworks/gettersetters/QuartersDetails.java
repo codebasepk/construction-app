@@ -1,17 +1,17 @@
 package com.byteshaft.hafizconstructionworks.gettersetters;
 
 public class QuartersDetails {
-    private int id;
     private int itemPrice;
     private String itemName;
     private String itemQuantity;
+    private int itemId;
 
-    public int getId() {
-        return id;
+    public int getItemId() {
+        return itemId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setItemId(int itemId) {
+        this.itemId = itemId;
     }
 
     public String getItemName() {
