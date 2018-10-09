@@ -1,6 +1,8 @@
 <resources>
-    <string name="app_name">Hafiz Construction Work</string>
+    <string name="app_name">Hafiz Construction Works</string>
     <string name="action_settings">Settings</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="required">Required</string>
+    <string name="nonetwork">No Internet</string>
 </resources>

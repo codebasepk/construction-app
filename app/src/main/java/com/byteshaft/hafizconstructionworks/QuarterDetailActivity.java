@@ -7,6 +7,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -76,6 +79,29 @@ public class QuarterDetailActivity extends AppCompatActivity {
         return true;
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // Handle item selection
+//        switch (item.getItemId()) {
+//            case R.id.add_after_imgs:
+//                Toast.makeText(this, "after Images", Toast.LENGTH_SHORT).show();
+//                return true;
+//            case R.id.add_before_imgs:
+//                Toast.makeText(this, "before Images", Toast.LENGTH_SHORT).show();
+//                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
+
     private void deleteDialog(int itemId) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(QuarterDetailActivity.this);
         alertDialogBuilder.setTitle("Delete");
@@ -118,6 +144,7 @@ public class QuarterDetailActivity extends AppCompatActivity {
             public void onReadyStateChange(HttpRequest httpRequest, int i) {
                 switch (i) {
                     case HttpRequest.STATE_DONE:
+                        Log.wtf("Response Data", httpRequest.getResponseText());
                         switch (httpRequest.getStatus()) {
                             case HttpURLConnection.HTTP_OK:
                                 Log.wtf("Response Data", httpRequest.getResponseText());

@@ -2,6 +2,9 @@ package com.byteshaft.hafizconstructionworks;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,10 +41,9 @@ public class AddItemActivity extends AppCompatActivity {
         mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                name = mItemName.getText().toString();
-                quantity = mItemQuantity.getText().toString();
-                price = mItemPrice.getText().toString();
-                addItemDetails(mQuarterId, name, quantity, price);
+                if (validate()) {
+                    addItemDetails(mQuarterId, name, quantity, price);
+                }
             }
         });
     }
@@ -50,6 +52,42 @@ public class AddItemActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+
+
+    public boolean validate() {
+        boolean valid = true;
+        name = mItemName.getText().toString();
+        quantity = mItemQuantity.getText().toString();
+        price = mItemPrice.getText().toString();
+
+        if (name.trim().isEmpty()) {
+            mItemName.setError(getString(R.string.required));
+            valid = false;
+        } else {
+            mItemName.setError(null);
+        }
+
+        if (quantity.isEmpty()) {
+            mItemQuantity.setError(getString(R.string.required));
+            valid = false;
+        } else {
+            mItemQuantity.setError(null);
+        }
+
+        if (price.isEmpty()) {
+            mItemPrice.setError(getString(R.string.required));
+        } else {
+            mItemPrice.setError(null);
+        }
+
+        if (!AppGlobals.isInternetAvailable) {
+            valid = false;
+            Toast.makeText(getApplicationContext(), R.string.nonetwork, Toast.LENGTH_SHORT).show();
+        }
+
+        return valid;
     }
 
     private void addItemDetails(int qurterId, String itemName, String itemQuantity, String itemPrice) {

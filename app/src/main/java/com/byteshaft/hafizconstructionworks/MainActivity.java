@@ -41,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (!AppGlobals.isInternetAvailable) {
+            Toast.makeText(this, getString(R.string.nonetwork), Toast.LENGTH_SHORT).show();
+        }
         Toolbar toolbar = findViewById(R.id.toolbar);
         mListView = findViewById(R.id.quarter_list);
         setSupportActionBar(toolbar);

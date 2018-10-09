@@ -3,4 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.byteshaft.hafizconstructionworks.MainActivity">
 
+    <!--<item-->
+        <!--android:id="@+id/add_before_imgs"-->
+        <!--android:title="Before"-->
+        <!--app:showAsAction="ifRoom|withText" />-->
+
+    <!--<item-->
+        <!--android:id="@+id/add_after_imgs"-->
+        <!--android:title="After"-->
+        <!--app:showAsAction="ifRoom|withText" />-->
+
 </menu>

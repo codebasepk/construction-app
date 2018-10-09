@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
 
 
 public class AppGlobals extends Application {
@@ -15,11 +16,16 @@ public class AppGlobals extends Application {
     public static Typeface typefaceBold;
     public static Typeface typefaceNormal;
 
+    public static boolean isInternetAvailable = false;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
         sContext = getApplicationContext();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(new NetworkChangeReceiver(), intentFilter);
 //        typefaceBold = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/bold.ttf");
 //        typefaceNormal = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/regular.ttf");
     }
